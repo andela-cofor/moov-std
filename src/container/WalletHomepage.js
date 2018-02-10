@@ -4,10 +4,13 @@ import React from 'react';
 // react-native library
 import { StyleSheet, View, Text } from 'react-native';
 
-// common
-import { StatusBarComponent} from "../common";
+// third-party libraries
 import firebase from "firebase";
 import { Card, Button } from 'react-native-elements';
+import RNPaystack from 'react-native-paystack';
+
+// common
+import { StatusBarComponent} from "../common";
 
 class WalletHomepage extends React.Component {
 	
@@ -23,6 +26,29 @@ class WalletHomepage extends React.Component {
 	 */
 	componentDidMount() {
 		// this.isVerified();
+		this.chargeCard();
+	}
+	
+	chargeCard() {
+		
+		RNPaystack.chargeCard({
+			cardNumber: '4123450131001381',
+			expiryMonth: '10',
+			expiryYear: '22',
+			cvc: '883',
+			email: 'oforchinedu12@gmail.com',
+			amountInKobo: 150000,
+			// subAccount: 'ACCT_pz61jjjsslnx1d9',
+		})
+			.then(response => {
+				console.log(response); // card charged successfully, get reference here
+			})
+			.catch(error => {
+				console.log(error); // error is a javascript Error object
+				console.log(error.message);
+				console.log(error.code);
+			})
+		
 	}
 	
 	/**
