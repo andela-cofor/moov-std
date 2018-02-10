@@ -14,18 +14,18 @@ export default MainStack = StackNavigator({
 	// 		header: null,
 	// 	}
 	// },
-	LoginPage: {
-		screen: LoginPage,
-		navigationOptions: {
-			header: null,
-		}
-	},
-	SignUpPage: {
-		screen: SignUpPage,
-		navigationOptions: {
-			header: null,
-		}
-	},
+	// LoginPage: {
+	// 	screen: LoginPage,
+	// 	navigationOptions: {
+	// 		header: null,
+	// 	}
+	// },
+	// SignUpPage: {
+	// 	screen: SignUpPage,
+	// 	navigationOptions: {
+	// 		header: null,
+	// 	}
+	// },
 	MoovPages: {
 		screen: MoovPages,
 		navigationOptions: {

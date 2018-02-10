@@ -2,42 +2,30 @@
 import React from 'react';
 
 // react-native libraries
-import {
-	StyleSheet,
-	Text,
-	View,
-	TouchableOpacity,
-	Dimensions,
-	Animated } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
-// commom
-import { StatusBarComponent } from "../common";
+// components
+import { Tabs } from '../config/router';
 
 class MoovPages extends React.Component {
-	constructor () {
-		super();
-	}
 	
 	render() {
 		const { container } = styles;
 		
 		return (
-			<View style={container}>
-				<StatusBarComponent />
-				<Text>Moov Pages</Text>
-			</View>
+			<Tabs />
 		)
 	}
 }
 
+
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: '#004a80',
-		height: '100%',
 		flex: 1,
+		backgroundColor: 'white',
 		justifyContent: 'center',
-		alignItems: 'center'
-	},
-});
+		alignItems: 'center',
+	}
+})
 
 export { MoovPages };
