@@ -8,18 +8,18 @@ import { StackNavigator } from 'react-navigation';
 import { LandingPage, LoginPage, SignUpPage, MoovPages } from './src/screens';
 
 export default MainStack = StackNavigator({
-	LandingPage: {
-		screen: LandingPage,
-		navigationOptions: {
-			header: null,
-		}
-	},
-	LoginPage: {
-		screen: LoginPage,
-		navigationOptions: {
-			header: null,
-		}
-	},
+	// LandingPage: {
+	// 	screen: LandingPage,
+	// 	navigationOptions: {
+	// 		header: null,
+	// 	}
+	// },
+	// LoginPage: {
+	// 	screen: LoginPage,
+	// 	navigationOptions: {
+	// 		header: null,
+	// 	}
+	// },
 	SignUpPage: {
 		screen: SignUpPage,
 		navigationOptions: {

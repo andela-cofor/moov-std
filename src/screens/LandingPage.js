@@ -10,6 +10,9 @@ import {
 	Dimensions,
 	Animated } from 'react-native';
 
+// third-party librariesß
+import firebase from 'firebase';
+
 // commom
 import { StatusBarComponent } from "../common";
 
@@ -20,6 +23,25 @@ class LandingPage extends React.Component {
 	constructor () {
 		super();
 		this.springValue = new Animated.Value(0.3);
+	}
+	
+	/**
+	 * componentWillMount
+	 *
+	 * React life-cycle method initialize firebase app
+	 * @return {void}
+	 */
+	componentWillMount() {
+		// if (firebase.apps.length === 0) {
+		// 	firebase.initializeApp({
+		// 		apiKey: "AIzaSyD0ZJS7tPUrOWkZEZQRXDLQfLRT2yxhKMM",
+		// 		authDomain: "moov-68c37.firebaseapp.com",
+		// 		databaseURL: "https://moov-68c37.firebaseio.com",
+		// 		projectId: "moov-68c37",
+		// 		storageBucket: "moov-68c37.appspot.com",
+		// 		messagingSenderId: "1050975255216"
+		// 	});
+		// }
 	}
 	
 	/**
