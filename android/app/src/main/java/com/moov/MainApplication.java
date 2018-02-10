@@ -3,6 +3,8 @@ package com.moov;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.arttitude360.reactnative.rnpaystack.RNPaystackPackage;
 import com.arttitude360.reactnative.rnpaystack.RNPaystackPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
