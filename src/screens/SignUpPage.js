@@ -9,10 +9,15 @@ import {
 	ActivityIndicator,
 }from 'react-native';
 
+// third-part libraries
+import firebase from 'firebase';
+import { NavigationActions } from 'react-navigation';
+
+// component
+import { SignupForm } from "../component";
+
 // commom
 import { StatusBarComponent, HeaderComponent } from "../common";
-import firebase from "firebase";
-import { NavigationActions } from 'react-navigation';
 
 class SignUpPage extends React.Component {
 	/**
@@ -50,6 +55,87 @@ class SignUpPage extends React.Component {
 		}
 	}
 	
+	/**
+	 *
+	 */
+	onSubmitEditing = () => {
+		console.log(this.state, 'I was called');
+	};
+	
+	/**
+	 * onSignuSuccess
+	 *
+	 * sends user details to pa
+	 * @param {object} user - returned user object from firebase
+	 */
+	onSignuSuccess = (user) => {
+		this.setState({ loading: !this.state.loading });
+		firebase.auth().onAuthStateChanged((user) => {
+			if (user) {
+				if (user && user.emailVerified === false) {
+					user.sendEmailVerification()
+						.then(this.saveUserToServer)
+						.catch((error) => {
+							this.setState({
+								errorMessage: error.message,
+								loading: !this.state.loading
+							})
+						})
+				}
+			}
+		});
+	};
+	
+	/**
+	 * saveUserToServer
+	 *
+	 * Saves user using axios to the server
+	 * @return {void}
+	 */
+	saveUserToServer = () => {
+		const { navigate } = this.props.navigation;
+		console.log(this.state, 'Sending details')
+		console.log("email verification sent to user");
+		navigate('MoovPages');
+	};
+	
+	/**
+	 * onSubmit
+	 */
+	onSubmit = () => {
+		let hasNumber = /\d/;
+		console.log(this.state, 'State');
+		if(this.state.firstName.length < 1) {
+			this.setState({ errorMessage: 'First Name field cannot be empty' })
+		}
+		
+		if(hasNumber.test(this.state.firstName)) {
+			this.setState({ errorMessage: 'First Name field cannot contains numbers' })
+		}
+		
+		if(this.state.lastName.length < 1) {
+			this.setState({ errorMessage: 'Last Name field cannot be empty' })
+		}
+		
+		if(hasNumber.test(this.state.lastName)) {
+			this.setState({ errorMessage: 'Last Name field cannot contains numbers' })
+		}
+		
+		if(this.state.firstName.length >= 1 && this.state.lastName.length >= 1) {
+			if(hasNumber.test(this.state.firstName) === false && hasNumber.test(this.state.firstName) === false) {
+				this.setState({ loading: !this.state.loading, errorMessage: '' });
+				firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+					.then(this.onSignuSuccess)
+					.catch((error) => {
+						this.setState({
+							errorMessage: error.message,
+							loading: !this.state.loading
+						})
+					})
+			}
+		}
+	};
+	
 	render() {
 		const { container, activityIndicator } = styles;
 		const resetAction = NavigationActions.reset({
@@ -73,7 +159,7 @@ class SignUpPage extends React.Component {
 		}
 		
 		return (
-			<View style={container}>
+			<View>
 				<StatusBarComponent />
 				<HeaderComponent
 					backgroundColor='#004a80'
@@ -86,7 +172,25 @@ class SignUpPage extends React.Component {
 					iconName='sign-in'
 					iconType='font-awesome'
 				/>
-				<Text>SignUpPage Page</Text>
+				<View style={container}>
+					<SignupForm
+						onSubmitEditing={this.onSubmitEditing}
+						firstName={this.state.firstName}
+						lastNameValue={this.state.lastName}
+						emailValue={this.state.email}
+						passwordValue={this.state.password}
+						errorMessage={this.state.errorMessage}
+						onChangeFirstNameText={firstName => this.setState({ firstName })}
+						onChangeLastNameText={lastName => this.setState({ lastName })}
+						onChangeEmailText={email => this.setState({ email })}
+						onChangePasswordText={password => this.setState({ password })}
+						onSubmit={() => this.onSubmit()}
+						buttonIconName='md-person-add'
+						buttonIconType='ionicon'
+						buttonText='Sign Up'
+						autoFocus2={this.state.autoFocus}
+					/>
+				</View>
 			</View>
 		)
 	}
