@@ -47,16 +47,6 @@ class WalletHomepage extends React.Component {
 	 * @return {void}
 	 */
 	componentDidMount() {
-		if (firebase.apps.length === 0) {
-			firebase.initializeApp({
-				apiKey: "AIzaSyD0ZJS7tPUrOWkZEZQRXDLQfLRT2yxhKMM",
-				authDomain: "moov-68c37.firebaseapp.com",
-				databaseURL: "https://moov-68c37.firebaseio.com",
-				projectId: "moov-68c37",
-				storageBucket: "moov-68c37.appspot.com",
-				messagingSenderId: "1050975255216"
-			});
-		}
 		this.isVerified();
 	}
 	
