@@ -158,7 +158,7 @@ class MoovHomepage extends React.Component {
 			<Mapbox.PointAnnotation
 				key='pointAnnotation'
 				id='pointAnnotation'
-				coordinate={[this.state.myLocationLongitude, this.state.myLocationLatitude]}>
+				coordinate={[this.state.myDestinationLongitude, this.state.myDestinationLatitude]}>
 				
 				<View style={styles.annotationContainer}>
 					<View style={styles.annotationFill} />
@@ -300,6 +300,22 @@ class MoovHomepage extends React.Component {
 						size = "large"
 						style={activityIndicator}
 					/>
+				</View>
+			);
+		}
+		
+		// show mapBox
+		if(this.state.showMap) {
+			return (
+				<View style={styles.container}>
+					<Mapbox.MapView
+						styleURL={Mapbox.StyleURL.Dark}
+						zoomLevel={15}
+						centerCoordinate={myLocation}
+						style={styles.container}
+						showUserLocation={true}>
+						{this.renderAnnotations()}
+					</Mapbox.MapView>
 				</View>
 			);
 		}
