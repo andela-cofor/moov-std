@@ -325,7 +325,6 @@ class WalletHomepage extends React.Component {
 		const { container, activityIndicator } = styles;
 		let { height, width } = Dimensions.get('window');
 		
-		
 		let data = [{ value: 'LOAD', }, { value: 'TRANSFER', }];
 		
 		if(this.state.toggleEmailTransfer) {

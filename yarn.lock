@@ -3236,6 +3236,10 @@ react-native-flip-card@^3.4.1:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-geocoding@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-geocoding/-/react-native-geocoding-0.2.0.tgz#c76d3b51890e3cc2c76505bf3a4781623cfcccc3"
+
 react-native-material-buttons@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/react-native-material-buttons/-/react-native-material-buttons-0.5.0.tgz#ab2b3e3fc3f500ca713f51e9d75978aff602152a"

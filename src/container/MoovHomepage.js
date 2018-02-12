@@ -4,9 +4,14 @@ import React from 'react';
 // react-native library
 import { StyleSheet, View, Text, Platform, PermissionsAndroid } from 'react-native';
 
+// third-party libraries
+import firebase from "firebase";
+import Geocoder from 'react-native-geocoding';
+
 // common
 import { StatusBarComponent} from "../common";
-import firebase from "firebase";
+
+Geocoder.setApiKey('AIzaSyCtQUa9LRWMjEUh5KiPk3r5vQhak8SJlCE'); // use a valid API key
 
 class MoovHomepage extends React.Component {
 	
@@ -15,7 +20,6 @@ class MoovHomepage extends React.Component {
 		myLocationLatitude: null,
 		myLocationLongitude: null,
 		myLocationName: 'My Location',
-		
 	};
 	
 	/**
@@ -95,11 +99,21 @@ class MoovHomepage extends React.Component {
 					myLocationLongitude: position.coords.longitude,
 					error: null,
 				});
+				// Geocoder.getFromLatLng(6.671823, 3.158125)
+				// 	.then((json) => {
+				// 		let address_component = json.results[0].address_components[0];
+				// 		console.log(address_component.long_name, 'where');
+				// 		console.log(json, 'where');
+				// 		console.log(address_component, 'where');
+				// 	})
 			},
 			(error) => this.setState({ error: error.message }),
 			{ enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 },
 		);
 	};
+	
+	
+	
 	
 	/**
 	 * login
