@@ -2,18 +2,22 @@
 import React from 'react';
 
 // react-native library
-import { StyleSheet, View, Text, Platform, PermissionsAndroid, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, Platform, PermissionsAndroid, ActivityIndicator, Dimensions } from 'react-native';
 
 // third-party libraries
 import firebase from "firebase";
 import Geocoder from 'react-native-geocoding';
-
+import Modal from 'react-native-simple-modal';
 import Mapbox from '@mapbox/react-native-mapbox-gl';
-import { Card, Button } from 'react-native-elements';
+import { Card, Button, PricingCard } from 'react-native-elements';
+import Toast from 'react-native-simple-toast';
+import { Dropdown } from 'react-native-material-dropdown';
 
+// component
+import { GooglePlacesInput } from "../component";
 
 // common
-import { StatusBarComponent} from "../common";
+import { StatusBarComponent, ButtonTextComponent} from "../common";
 
 Mapbox.setAccessToken('pk.eyJ1IjoiY2hpbmVkdS1tb292IiwiYSI6ImNqY3k0OHB0bzE5enUyd281cWNrMWhiZzMifQ.v-D-XU5Db6VMf_SXQTaW2A');
 
@@ -106,7 +110,6 @@ class MoovHomepage extends React.Component {
 		}
 	}
 	
-	
 	/**
 	 * getMyLocation
 	 *
@@ -165,14 +168,126 @@ class MoovHomepage extends React.Component {
 		)
 	}
 	
+	/**
+	 * toggleMap
+	 *
+	 * shows map by toggling the showMap state
+	 */
+	toggleMap = () => {
+		this.setState({ showMap: !this.state.showMap })
+	};
+	
+	/**
+	 * setUserLocation
+	 *
+	 * sets user location in the state
+	 * @param location
+	 * @param locationName
+	 */
+	setUserLocation = (location, myLocationName) => {
+		this.setState({
+			myLocationLatitude: location.lat,
+			myLocationLongitude: location.lng,
+			myLocationName,
+		});
+	};
+	
+	/**
+	 * setUserDestination
+	 *
+	 * sets user destination in the state
+	 * @param {number} destination
+	 * @param {number} destinationName
+	 */
+	setUserDestination = (destination, myDestinationName) => {
+		this.setState({
+			myDestinationLatitude: destination.lat,
+			myDestinationLongitude: destination.lng,
+			myDestinationName,
+		});
+	};
+	
+	/**
+	 * verifyRoutes
+	 *
+	 * Verifies user location and destination
+	 * @return {void}
+	 */
+	verifyRoutes = () => {
+		if(this.state.myDestinationLatitude !== null) {
+			this.getPrice();
+			Toast.showWithGravity(
+				`${this.state.myDestinationLatitude}`,
+				Toast.LONG,
+				Toast.TOP,
+			);
+		} else {
+			Toast.showWithGravity(
+				`Kindly select a destination`,
+				Toast.LONG,
+				Toast.TOP,
+			);
+		}
+	};
+	
+	/**
+	 * getDistance
+	 *
+	 * Calculates the User's distance
+	 * @param lat1
+	 * @param lon1
+	 * @param lat2
+	 * @param lon2
+	 * @param unit
+	 * @return {number}
+	 */
+	getDistance = (lat1, lon1, lat2, lon2, unit) =>  {
+		let radlat1 = Math.PI * lat1/180;
+		let radlat2 = Math.PI * lat2/180;
+		let theta = lon1-lon2;
+		let radtheta = Math.PI * theta/180;
+		let dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+		dist = Math.acos(dist);
+		dist = dist * 180/Math.PI;
+		dist = dist * 60 * 1.1515;
+		if (unit === "K") { dist = dist * 1.609344 }
+		if (unit === "N") { dist = dist * 0.8684 }
+		
+		return dist * 500
+	};
+	
+	/**
+	 * getPrice
+	 *
+	 * This method gets the distance and calcultes the get Price method
+	 * @return {void}
+	 */
+	getPrice = () => {
+		let distance = this.getDistance(
+			this.state.myLocationLatitude,
+			this.state.myLocationLongitude,
+			this.state.myDestinationLatitude,
+			this.state.myDestinationLongitude
+		);
+		
+		let price = Math.floor(distance) *  this.state.requestSlot;
+		
+		// this.setState({ price })
+		this.setState({ price, showModal: !this.state.showModal })
+	};
+	
 	render() {
 		const { container, activityIndicator } = styles;
 		console.log(this.state);
 		
-		let myCoordinate;
+		let myDestination, myLocation;
+		let { height, width } = Dimensions.get('window');
+		let slots = [ { value: '1', }, { value: '2', }, { value: '3', }, { value: '4', } ];
+		let priceLog = `₦ ${this.state.price}`;
 		
 		if(this.state.myLocationLatitude) {
-			myCoordinate = [this.state.myLocationLongitude, this.state.myLocationLatitude]
+			myDestination = [this.state.myDestinationLongitude, this.state.myDestinationLatitude]
+			myLocation = [this.state.myLocationLongitude, this.state.myLocationLatitude]
 		}
 		
 		// ACTIVITY INDICATOR
@@ -212,6 +327,93 @@ class MoovHomepage extends React.Component {
 					</Card>
 				</View>
 			);
+		}
+		
+		// VERIFIED AND HAS LOCATION
+		if(this.state.verifiedUser && this.state.myLocationLongitude !== null) {
+			return (
+				<View style={{ backgroundColor: '#fff',height: height }}>
+					<StatusBarComponent />
+					<Modal
+						modalStyle={{
+							borderRadius: 2,
+							margin: 20,
+							padding: 10,
+							backgroundColor: 'white'
+						}}
+						offset={this.state.offset}
+						open={this.state.showModal}
+						// open={true}
+						modalDidOpen={() => console.log('modal did open')}
+						modalDidClose={() => this.setState({showModal: false})}
+						style={{alignItems: 'center'}}>
+						<View>
+							<PricingCard
+								color='#004a80'
+								title='Fee'
+								price={priceLog}
+								// info={['1 User(s)', 'Basic Support', 'All Core Features']}
+								info={[
+									`${this.state.requestSlot} User(s)`,
+									`From ${this.state.myLocationName}`,
+									`To ${this.state.myDestinationName} `,
+									`Powered by Symple.tech`
+								]}
+								button={{ title: 'Accept', icon: 'directions-car' }}
+								onButtonPress={this.toggleMap}
+							/>
+						</View>
+					</Modal>
+					<View style={{ flexDirection: 'column', ...Platform.select({
+							ios: {
+								marginTop: height / 10
+							},
+							android: {
+								marginTop: height / 25
+							},
+						}),
+						zIndex: -1,
+					}}>
+						<View style={{ height: height / 4, width: '100%',}}>
+							<GooglePlacesInput
+								text='Change my location'
+								onPress={(data, details = null) => {
+									// console.log(data, details)
+									this.setUserLocation(details.geometry.location, details.name);
+								}}
+							/>
+						</View>
+						<View style={{ height: height / 4, width: '100%'}}>
+							<GooglePlacesInput
+								text='TO'
+								onPress={(data, details = null) => {
+									// console.log(data, details)
+									this.setUserDestination(details.geometry.location, details.name);
+								}}
+								text='To'
+							/>
+						</View>
+					</View>
+					<View style={{ width: '90%', zIndex: -1, marginLeft: width / 20}}>
+						<Dropdown
+							label='slots'
+							itemColor='blue'
+							data={slots}
+							value='1'
+							onChangeText={requestSlot => this.setState({requestSlot })}
+						/>
+					</View>
+					<View style={{ zIndex: -1, marginTop: 10 }}>
+						<ButtonTextComponent
+							onPress={this.verifyRoutes}
+							buttonText='MOOV'
+							iconName='fast-forward'
+							iconType='foundation'
+							backgroundColor='#004a80'
+						/>
+					</View>
+				</View>
+			)
 		}
 		
 		return (
