@@ -2,13 +2,7 @@
 import React from 'react';
 
 // react-native libraries
-import {
-	StyleSheet,
-	Text,
-	View,
-	TouchableOpacity,
-	Dimensions,
-	Animated } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 
 // component
 import { LoginForm } from "../component";
@@ -76,7 +70,21 @@ class LoginPage extends React.Component {
 	};
 	
 	render() {
-		const { container } = styles;
+		const { container, activityIndicator } = styles;
+		
+		// ACTIVITY INDICATOR
+		if (this.state.loading) {
+			return (
+				<View style={{flex: 1}}>
+					<StatusBarComponent />
+					<ActivityIndicator
+						color = '#004a80'
+						size = "large"
+						style={activityIndicator}
+					/>
+				</View>
+			);
+		}
 		
 		return (
 			<View>

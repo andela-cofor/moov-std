@@ -22,10 +22,17 @@ Geocoder.setApiKey('AIzaSyCtQUa9LRWMjEUh5KiPk3r5vQhak8SJlCE'); // use a valid AP
 class MoovHomepage extends React.Component {
 	
 	state={
-		verifiedUser: true,
+		myDestinationName: '',
+		myDestinationLatitude: null,
+		myDestinationLongitude: null,
 		myLocationLatitude: null,
 		myLocationLongitude: null,
 		myLocationName: 'My Location',
+		price: '',
+		requestSlot: 1,
+		verifiedUser: false,
+		showModal: false,
+		showMap: false,
 	};
 	
 	/**
@@ -35,6 +42,18 @@ class MoovHomepage extends React.Component {
 	 * @return {void}
 	 */
 	componentDidMount() {
+		if (firebase.apps.length === 0) {
+			firebase.initializeApp({
+				apiKey: "AIzaSyD0ZJS7tPUrOWkZEZQRXDLQfLRT2yxhKMM",
+				authDomain: "moov-68c37.firebaseapp.com",
+				databaseURL: "https://moov-68c37.firebaseio.com",
+				projectId: "moov-68c37",
+				storageBucket: "moov-68c37.appspot.com",
+				messagingSenderId: "1050975255216"
+			});
+		}
+		
+		this.isVerified();
 		
 		if(Platform.OS === 'ios') {
 			this.getMyLocation();
@@ -57,7 +76,6 @@ class MoovHomepage extends React.Component {
 				messagingSenderId: "1050975255216"
 			});
 		}
-		this.isVerified();
 	}
 	
 	/**
@@ -111,20 +129,6 @@ class MoovHomepage extends React.Component {
 		);
 	};
 	
-	
-	/**
-	 * login
-	 *
-	 * Navigate to login page
-	 * @return {void}
-	 */
-	login = () => {
-		this.setState({ loading: !this.state.loading });
-		const { navigate } = this.props.navigation;
-		this.setState({ loading: !this.state.loading });
-		navigate('LoginPage');
-	};
-	
 	/**
 	 * isVerified
 	 *
@@ -164,6 +168,7 @@ class MoovHomepage extends React.Component {
 	render() {
 		const { container, activityIndicator } = styles;
 		console.log(this.state);
+		
 		let myCoordinate;
 		
 		if(this.state.myLocationLatitude) {
@@ -193,7 +198,7 @@ class MoovHomepage extends React.Component {
 						title='FETCHING YOUR LOCATION'
 						image={require('../../assets/my_location.jpg')}>
 						<Text style={{marginBottom: 10}}>
-							kindly turn on your location and give app permission
+							kindly turn on your location and grant location permission to MOOV.
 						</Text>
 						<View style={{ flexDirection: 'row'}}>
 							<ActivityIndicator
@@ -211,14 +216,14 @@ class MoovHomepage extends React.Component {
 		
 		return (
 			<View style={styles.container}>
-				<Mapbox.MapView
-					styleURL={Mapbox.StyleURL.Dark}
-					zoomLevel={15}
-					centerCoordinate={[3.331647, 6.446987]}
-					style={styles.container}
-					showUserLocation={true}>
-					{this.renderAnnotations()}
-				</Mapbox.MapView>
+				{/*<Mapbox.MapView*/}
+					{/*styleURL={Mapbox.StyleURL.Dark}*/}
+					{/*zoomLevel={15}*/}
+					{/*centerCoordinate={[3.331647, 6.446987]}*/}
+					{/*style={styles.container}*/}
+					{/*showUserLocation={true}>*/}
+					{/*{this.renderAnnotations()}*/}
+				{/*</Mapbox.MapView>*/}
 			</View>
 		);
 	}
