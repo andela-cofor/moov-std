@@ -2,21 +2,27 @@
 import React from 'react';
 
 // react-native library
-import { StyleSheet, View, Text, Platform, PermissionsAndroid } from 'react-native';
+import { StyleSheet, View, Text, Platform, PermissionsAndroid, ActivityIndicator } from 'react-native';
 
 // third-party libraries
 import firebase from "firebase";
 import Geocoder from 'react-native-geocoding';
 
+import Mapbox from '@mapbox/react-native-mapbox-gl';
+import { Card, Button } from 'react-native-elements';
+
+
 // common
 import { StatusBarComponent} from "../common";
+
+Mapbox.setAccessToken('pk.eyJ1IjoiY2hpbmVkdS1tb292IiwiYSI6ImNqY3k0OHB0bzE5enUyd281cWNrMWhiZzMifQ.v-D-XU5Db6VMf_SXQTaW2A');
 
 Geocoder.setApiKey('AIzaSyCtQUa9LRWMjEUh5KiPk3r5vQhak8SJlCE'); // use a valid API key
 
 class MoovHomepage extends React.Component {
 	
 	state={
-		verifiedUser: false,
+		verifiedUser: true,
 		myLocationLatitude: null,
 		myLocationLongitude: null,
 		myLocationName: 'My Location',
@@ -99,20 +105,11 @@ class MoovHomepage extends React.Component {
 					myLocationLongitude: position.coords.longitude,
 					error: null,
 				});
-				// Geocoder.getFromLatLng(6.671823, 3.158125)
-				// 	.then((json) => {
-				// 		let address_component = json.results[0].address_components[0];
-				// 		console.log(address_component.long_name, 'where');
-				// 		console.log(json, 'where');
-				// 		console.log(address_component, 'where');
-				// 	})
 			},
 			(error) => this.setState({ error: error.message }),
 			{ enableHighAccuracy: true, timeout: 200000, maximumAge: 1000 },
 		);
 	};
-	
-	
 	
 	
 	/**
@@ -145,14 +142,83 @@ class MoovHomepage extends React.Component {
 		});
 	};
 	
+	/**
+	 *
+	 * @return {*}
+	 */
+	renderAnnotations () {
+		return (
+			<Mapbox.PointAnnotation
+				key='pointAnnotation'
+				id='pointAnnotation'
+				coordinate={[this.state.myLocationLongitude, this.state.myLocationLatitude]}>
+				
+				<View style={styles.annotationContainer}>
+					<View style={styles.annotationFill} />
+				</View>
+				<Mapbox.Callout title='My Location' />
+			</Mapbox.PointAnnotation>
+		)
+	}
+	
 	render() {
-		const { container } = styles;
+		const { container, activityIndicator } = styles;
 		console.log(this.state);
+		let myCoordinate;
+		
+		if(this.state.myLocationLatitude) {
+			myCoordinate = [this.state.myLocationLongitude, this.state.myLocationLatitude]
+		}
+		
+		// ACTIVITY INDICATOR
+		if (this.state.loading) {
+			return (
+				<View style={{flex: 1}}>
+					<StatusBarComponent />
+					<ActivityIndicator
+						color = '#004a80'
+						size = "large"
+						style={activityIndicator}
+					/>
+				</View>
+			);
+		}
+		
+		// FETCHING YOUR LOCATION
+		if (this.state.verifiedUser && this.state.myLocationLongitude === null) {
+			return (
+				<View style={{flex: 1,justifyContent: 'center', backgroundColor: 'white'}}>
+					<StatusBarComponent />
+					<Card
+						title='FETCHING YOUR LOCATION'
+						image={require('../../assets/my_location.jpg')}>
+						<Text style={{marginBottom: 10}}>
+							kindly turn on your location and give app permission
+						</Text>
+						<View style={{ flexDirection: 'row'}}>
+							<ActivityIndicator
+								color = '#004a80'
+								size = "large"
+								style={activityIndicator}
+							/>
+						</View>
+						<Text style={{marginBottom: 10}}>
+						</Text>
+					</Card>
+				</View>
+			);
+		}
 		
 		return (
-			<View style={container}>
-				<StatusBarComponent />
-				<Text>Moov Page</Text>
+			<View style={styles.container}>
+				<Mapbox.MapView
+					styleURL={Mapbox.StyleURL.Dark}
+					zoomLevel={15}
+					centerCoordinate={[3.331647, 6.446987]}
+					style={styles.container}
+					showUserLocation={true}>
+					{this.renderAnnotations()}
+				</Mapbox.MapView>
 			</View>
 		);
 	}
@@ -161,10 +227,31 @@ class MoovHomepage extends React.Component {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#fff',
+		// backgroundColor: '#fff',
+		// alignItems: 'center',
+		// justifyContent: 'center',
+	},
+	activityIndicator: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		height: 20
+	},
+	annotationContainer: {
+		width: 30,
+		height: 30,
 		alignItems: 'center',
 		justifyContent: 'center',
+		backgroundColor: 'white',
+		borderRadius: 15,
 	},
+	annotationFill: {
+		width: 30,
+		height: 30,
+		borderRadius: 15,
+		backgroundColor: 'orange',
+		transform: [{ scale: 0.6 }],
+	}
 });
 
 export { MoovHomepage };

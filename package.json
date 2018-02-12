@@ -17,6 +17,7 @@
     "preset": "react-native"
   },
   "dependencies": {
+    "@mapbox/react-native-mapbox-gl": "6.0.2",
     "firebase": "^4.9.1",
     "react": "16.2.0",
     "react-native": "0.52.0",
