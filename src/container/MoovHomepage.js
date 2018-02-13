@@ -5,7 +5,7 @@ import React from 'react';
 import { StyleSheet, View, Text, Platform, PermissionsAndroid, ActivityIndicator, Dimensions } from 'react-native';
 
 // third-party libraries
-import firebase from "firebase";
+import * as firebase from "firebase";
 import Geocoder from 'react-native-geocoding';
 import Modal from 'react-native-simple-modal';
 import Mapbox from '@mapbox/react-native-mapbox-gl';
@@ -42,6 +42,8 @@ class MoovHomepage extends React.Component {
 		bulbColor: 'white',
 		bulbBackgroundColor: 'black',
 		mapColor: Mapbox.StyleURL.Street,
+		driverLng: null,
+		driverLat: null,
 	};
 	
 	/**
@@ -50,7 +52,7 @@ class MoovHomepage extends React.Component {
 	 * React life cycle method
 	 * @return {void}
 	 */
-	componentDidMount() {
+	componentWillMount() {
 		if (firebase.apps.length === 0) {
 			firebase.initializeApp({
 				apiKey: "AIzaSyD0ZJS7tPUrOWkZEZQRXDLQfLRT2yxhKMM",
@@ -60,6 +62,7 @@ class MoovHomepage extends React.Component {
 				storageBucket: "moov-68c37.appspot.com",
 				messagingSenderId: "1050975255216"
 			});
+			// firebase.initializeApp();
 		}
 		
 		this.isVerified();
@@ -74,16 +77,6 @@ class MoovHomepage extends React.Component {
 					console.log(response, 'RESPONSE');
 				});
 			console.log('Android');
-		}
-		if (firebase.apps.length === 0) {
-			firebase.initializeApp({
-				apiKey: "AIzaSyD0ZJS7tPUrOWkZEZQRXDLQfLRT2yxhKMM",
-				authDomain: "moov-68c37.firebaseapp.com",
-				databaseURL: "https://moov-68c37.firebaseio.com",
-				projectId: "moov-68c37",
-				storageBucket: "moov-68c37.appspot.com",
-				messagingSenderId: "1050975255216"
-			});
 		}
 	}
 	
@@ -153,6 +146,29 @@ class MoovHomepage extends React.Component {
 			}
 		});
 	};
+	
+	/**
+	 *
+	 * @return {*}
+	 */
+	getDriver =  () => {
+		// // Get a reference to the database service
+		let database = firebase.database();
+		let driverLocation = [];
+		
+		
+		database.ref('/Drivers/' + 1234).on('value', (location) => {
+			const locationVal = location.val();
+			locationVal.key = location.key;
+			console.log(locationVal, 'Loc Value')
+			driverLocation = locationVal;
+			this.setState({
+				driverLng: locationVal.longitude,
+				driverLat: locationVal.latitude
+			})
+		});
+	};
+	
 	
 	/**
 	 *
@@ -264,7 +280,7 @@ class MoovHomepage extends React.Component {
 		if (unit === "K") { dist = dist * 1.609344 }
 		if (unit === "N") { dist = dist * 0.8684 }
 		
-		return dist * 500
+		return dist
 	};
 	
 	/**
@@ -283,8 +299,18 @@ class MoovHomepage extends React.Component {
 		
 		let price = Math.floor(distance) *  this.state.requestSlot;
 		
+		price = price * 500;
+		
 		// this.setState({ price })
 		this.setState({ price, showModal: !this.state.showModal })
+	};
+	
+	hasArrived = () => {
+		if(this.state.driverLat!== null && this.state.myLocationLatitude !== null) {
+			if(this.state.driverLat === this.state.myLocationLatitude) {
+				return true;
+			}
+		}
 	};
 	
 	/**
@@ -341,8 +367,18 @@ class MoovHomepage extends React.Component {
 			);
 		}
 		
-		// show mapBox
-		if(this.state.showMap) {
+		// driver is here
+		if(this.hasArrived()) {
+			return (
+				<View>
+					<Text>Diver is here</Text>
+				</View>
+			)
+		}
+		
+		// show mapBox with driver
+		if(this.state.showMap && this.state.driverLat !== null) {
+			console.log('got here')
 			return (
 				<View style={styles.container}>
 					<Mapbox.MapView
@@ -352,6 +388,55 @@ class MoovHomepage extends React.Component {
 						style={styles.container}
 						showUserLocation={true}
 					>
+						<Mapbox.PointAnnotation
+							key='pointAnnotation'
+							id='pointAnnotation'
+							coordinate={[this.state.driverLng, this.state.driverLat]}
+							// coordinate={[-122.406417, 37.784834]}
+							// coordinate={[-122.406417, 37.783834]}
+							// coordinate={[-122.406417, 37.782834]}
+							// coordinate={[-122.406417, 37.781834]}
+						
+						>
+							
+							<View style={styles.annotationContainer}>
+								<View style={styles.annotationFill} />
+							</View>
+							<Mapbox.Callout title='My Location'
+							/>
+						</Mapbox.PointAnnotation>
+						{/*{this.renderAnnotations()}*/}
+						{
+							(Platform.OS === 'ios')
+								?
+								<View style={{ marginTop: 20, alignItems: 'flex-end'}}>
+									<Icon
+										raised
+										name={this.state.bulbName}
+										type={this.state.bulbType}
+										color={this.state.bulbColor}
+										containerStyle={{ backgroundColor:  this.state.bulbBackgroundColor }}
+										onPress={this.toggleMapType} />
+								</View>
+								: <View/>
+						}
+					</Mapbox.MapView>
+				</View>
+			);
+		}
+		
+		// show mapBox
+		if(this.state.showMap && this.state.driverLat === null) {
+			return (
+				<View style={styles.container}>
+					<Mapbox.MapView
+						styleURL={this.state.mapColor}
+						zoomLevel={15}
+						centerCoordinate={myLocation}
+						style={styles.container}
+						showUserLocation={true}
+					>
+						{/*{this.getDriver()}*/}
 						{this.renderAnnotations()}
 						{
 							(Platform.OS === 'ios')
