@@ -2,14 +2,14 @@
 import React from 'react';
 
 // react-native library
-import { StyleSheet, View, Text, Platform, PermissionsAndroid, ActivityIndicator, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Platform, PermissionsAndroid, ActivityIndicator, Dimensions, TouchableOpacity } from 'react-native';
 
 // third-party libraries
 import * as firebase from "firebase";
 import Geocoder from 'react-native-geocoding';
 import Modal from 'react-native-simple-modal';
 import Mapbox from '@mapbox/react-native-mapbox-gl';
-import { Card, Button, PricingCard, Icon } from 'react-native-elements';
+import { Card, Button, PricingCard, Icon, ListItem } from 'react-native-elements';
 import Toast from 'react-native-simple-toast';
 import { Dropdown } from 'react-native-material-dropdown';
 
@@ -17,7 +17,7 @@ import { Dropdown } from 'react-native-material-dropdown';
 import { GooglePlacesInput } from "../component";
 
 // common
-import { StatusBarComponent, ButtonTextComponent} from "../common";
+import { StatusBarComponent, ButtonTextComponent } from "../common";
 
 Mapbox.setAccessToken('pk.eyJ1IjoiY2hpbmVkdS1tb292IiwiYSI6ImNqY3k0OHB0bzE5enUyd281cWNrMWhiZzMifQ.v-D-XU5Db6VMf_SXQTaW2A');
 
@@ -34,7 +34,7 @@ class MoovHomepage extends React.Component {
 		myLocationName: 'My Location',
 		price: '',
 		requestSlot: 1,
-		verifiedUser: false,
+		verifiedUser: true,
 		showModal: false,
 		showMap: true,
 		bulbName: 'ios-bulb',
@@ -44,6 +44,7 @@ class MoovHomepage extends React.Component {
 		mapColor: Mapbox.StyleURL.Street,
 		driverLng: null,
 		driverLat: null,
+		driverCardBKColor: '#e7e4e0',
 	};
 	
 	/**
@@ -305,6 +306,12 @@ class MoovHomepage extends React.Component {
 		this.setState({ price, showModal: !this.state.showModal })
 	};
 	
+	/**
+	 * hasArrived
+	 *
+	 * Returns true when driver reaches the request location
+	 * @return {boolean}
+	 */
 	hasArrived = () => {
 		if(this.state.driverLat!== null && this.state.myLocationLatitude !== null) {
 			if(this.state.driverLat === this.state.myLocationLatitude) {
@@ -326,6 +333,7 @@ class MoovHomepage extends React.Component {
 				bulbColor: 'black',
 				bulbBackgroundColor: 'white',
 				mapColor: Mapbox.StyleURL.Dark,
+				driverCardBKColor: '#343332',
 			})
 		}
 		
@@ -335,6 +343,7 @@ class MoovHomepage extends React.Component {
 				bulbColor: 'white',
 				bulbBackgroundColor: 'black',
 				mapColor: Mapbox.StyleURL.Street,
+				driverCardBKColor: '#e7e4e0',
 			})
 		}
 	};
@@ -347,6 +356,12 @@ class MoovHomepage extends React.Component {
 		let { height, width } = Dimensions.get('window');
 		let slots = [ { value: '1', }, { value: '2', }, { value: '3', }, { value: '4', } ];
 		let priceLog = `₦ ${this.state.price}`;
+		const driverDetails = [
+			{
+				name: 'Solo Dipo',
+				avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg'
+			},
+		]
 		
 		if(this.state.myLocationLatitude) {
 			myDestination = [this.state.myDestinationLongitude, this.state.myDestinationLatitude]
@@ -370,13 +385,95 @@ class MoovHomepage extends React.Component {
 		// driver is here
 		if(this.hasArrived()) {
 			return (
-				<View>
-					<Text>Diver is here</Text>
+				<View style={styles.container}>
+					<View style={{ backgroundColor: this.state.driverCardBKColor}}>
+						<Card title="DIVIDER DETAILS">
+							{
+								<Card containerStyle={{padding: 0}} >
+									{
+										driverDetails.map((u, i) => {
+											return (
+												<TouchableOpacity
+													onPress={console.log('Pressed')}
+													key={i}
+												>
+													<ListItem
+														roundAvatar
+														title={u.name}
+														avatar={{uri:u.avatar}}
+													/>
+												</TouchableOpacity>
+											);
+										})
+									}
+								</Card>
+							}
+						</Card>
+					</View>
+					<Mapbox.MapView
+						styleURL={this.state.mapColor}
+						zoomLevel={15}
+						centerCoordinate={myLocation}
+						style={styles.container}
+						showUserLocation={true}
+					>
+						<Mapbox.PointAnnotation
+							key='pointAnnotation'
+							id='pointAnnotation'
+							coordinate={[this.state.driverLng, this.state.driverLat]}
+						>
+							<View style={styles.annotationContainer}>
+								<View style={styles.annotationFill} />
+							</View>
+							<Mapbox.Callout title='My Location'
+							/>
+						</Mapbox.PointAnnotation>
+						{/*{this.renderAnnotations()}*/}
+						{
+							(Platform.OS === 'ios')
+								?
+								<View style={{ marginTop: 20, alignItems: 'flex-end'}}>
+									<Icon
+										raised
+										name={this.state.bulbName}
+										type={this.state.bulbType}
+										color={this.state.bulbColor}
+										containerStyle={{ backgroundColor:  this.state.bulbBackgroundColor }}
+										onPress={this.toggleMapType} />
+								</View>
+								: <View/>
+						}
+					</Mapbox.MapView>
 				</View>
 			)
 		}
 		
-		// show mapBox with driver
+		// FETCHING YOUR LOCATION
+		if (this.state.verifiedUser && this.state.myLocationLongitude === null) {
+			return (
+				<View style={{flex: 1,justifyContent: 'center', backgroundColor: 'white'}}>
+					<StatusBarComponent />
+					<Card
+						title='FETCHING YOUR LOCATION'
+						image={require('../../assets/my_location.jpg')}>
+						<Text style={{marginBottom: 10}}>
+							kindly turn on your location and grant location permission to MOOV.
+						</Text>
+						<View style={{ flexDirection: 'row'}}>
+							<ActivityIndicator
+								color = '#004a80'
+								size = "large"
+								style={activityIndicator}
+							/>
+						</View>
+						<Text style={{marginBottom: 10}}>
+						</Text>
+					</Card>
+				</View>
+			);
+		}
+		
+		// show mapBox with driver pointer
 		if(this.state.showMap && this.state.driverLat !== null) {
 			console.log('got here')
 			return (
@@ -392,13 +489,7 @@ class MoovHomepage extends React.Component {
 							key='pointAnnotation'
 							id='pointAnnotation'
 							coordinate={[this.state.driverLng, this.state.driverLat]}
-							// coordinate={[-122.406417, 37.784834]}
-							// coordinate={[-122.406417, 37.783834]}
-							// coordinate={[-122.406417, 37.782834]}
-							// coordinate={[-122.406417, 37.781834]}
-						
 						>
-							
 							<View style={styles.annotationContainer}>
 								<View style={styles.annotationFill} />
 							</View>
@@ -436,8 +527,8 @@ class MoovHomepage extends React.Component {
 						style={styles.container}
 						showUserLocation={true}
 					>
-						{/*{this.getDriver()}*/}
-						{this.renderAnnotations()}
+						{this.getDriver()}
+						{/*{this.renderAnnotations()}*/}
 						{
 							(Platform.OS === 'ios')
 								?
@@ -453,31 +544,6 @@ class MoovHomepage extends React.Component {
 								: <View/>
 						}
 					</Mapbox.MapView>
-				</View>
-			);
-		}
-		
-		// FETCHING YOUR LOCATION
-		if (this.state.verifiedUser && this.state.myLocationLongitude === null) {
-			return (
-				<View style={{flex: 1,justifyContent: 'center', backgroundColor: 'white'}}>
-					<StatusBarComponent />
-					<Card
-						title='FETCHING YOUR LOCATION'
-						image={require('../../assets/my_location.jpg')}>
-						<Text style={{marginBottom: 10}}>
-							kindly turn on your location and grant location permission to MOOV.
-						</Text>
-						<View style={{ flexDirection: 'row'}}>
-							<ActivityIndicator
-								color = '#004a80'
-								size = "large"
-								style={activityIndicator}
-							/>
-						</View>
-						<Text style={{marginBottom: 10}}>
-						</Text>
-					</Card>
 				</View>
 			);
 		}
@@ -570,7 +636,7 @@ class MoovHomepage extends React.Component {
 		}
 		
 		return (
-			<View style={styles.container}>
+			<View style={{ backgroundColor: '#fff', }}>
 				{/*<Mapbox.MapView*/}
 					{/*styleURL={Mapbox.StyleURL.Dark}*/}
 					{/*zoomLevel={15}*/}
