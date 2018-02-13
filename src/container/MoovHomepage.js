@@ -34,9 +34,9 @@ class MoovHomepage extends React.Component {
 		myLocationName: 'My Location',
 		price: '',
 		requestSlot: 1,
-		verifiedUser: true,
+		verifiedUser: false,
 		showModal: false,
-		showMap: true,
+		showMap: false,
 		bulbName: 'ios-bulb',
 		bulbType: 'ionicon',
 		bulbColor: 'white',
@@ -448,32 +448,7 @@ class MoovHomepage extends React.Component {
 			)
 		}
 		
-		// FETCHING YOUR LOCATION
-		if (this.state.verifiedUser && this.state.myLocationLongitude === null) {
-			return (
-				<View style={{flex: 1,justifyContent: 'center', backgroundColor: 'white'}}>
-					<StatusBarComponent />
-					<Card
-						title='FETCHING YOUR LOCATION'
-						image={require('../../assets/my_location.jpg')}>
-						<Text style={{marginBottom: 10}}>
-							kindly turn on your location and grant location permission to MOOV.
-						</Text>
-						<View style={{ flexDirection: 'row'}}>
-							<ActivityIndicator
-								color = '#004a80'
-								size = "large"
-								style={activityIndicator}
-							/>
-						</View>
-						<Text style={{marginBottom: 10}}>
-						</Text>
-					</Card>
-				</View>
-			);
-		}
-		
-		// show mapBox with driver pointer
+		// show mapBox with driver
 		if(this.state.showMap && this.state.driverLat !== null) {
 			console.log('got here')
 			return (
@@ -544,6 +519,31 @@ class MoovHomepage extends React.Component {
 								: <View/>
 						}
 					</Mapbox.MapView>
+				</View>
+			);
+		}
+		
+		// FETCHING YOUR LOCATION
+		if (this.state.verifiedUser && this.state.myLocationLongitude === null) {
+			return (
+				<View style={{flex: 1,justifyContent: 'center', backgroundColor: 'white'}}>
+					<StatusBarComponent />
+					<Card
+						title='FETCHING YOUR LOCATION'
+						image={require('../../assets/my_location.jpg')}>
+						<Text style={{marginBottom: 10}}>
+							kindly turn on your location and grant location permission to MOOV.
+						</Text>
+						<View style={{ flexDirection: 'row'}}>
+							<ActivityIndicator
+								color = '#004a80'
+								size = "large"
+								style={activityIndicator}
+							/>
+						</View>
+						<Text style={{marginBottom: 10}}>
+						</Text>
+					</Card>
 				</View>
 			);
 		}
@@ -636,7 +636,8 @@ class MoovHomepage extends React.Component {
 		}
 		
 		return (
-			<View style={{ backgroundColor: '#fff', }}>
+			<View style={styles.container}>
+				<Text>Close App</Text>
 				{/*<Mapbox.MapView*/}
 					{/*styleURL={Mapbox.StyleURL.Dark}*/}
 					{/*zoomLevel={15}*/}
