@@ -9,7 +9,7 @@ import firebase from "firebase";
 import Geocoder from 'react-native-geocoding';
 import Modal from 'react-native-simple-modal';
 import Mapbox from '@mapbox/react-native-mapbox-gl';
-import { Card, Button, PricingCard } from 'react-native-elements';
+import { Card, Button, PricingCard, Icon } from 'react-native-elements';
 import Toast from 'react-native-simple-toast';
 import { Dropdown } from 'react-native-material-dropdown';
 
@@ -36,7 +36,12 @@ class MoovHomepage extends React.Component {
 		requestSlot: 1,
 		verifiedUser: false,
 		showModal: false,
-		showMap: false,
+		showMap: true,
+		bulbName: 'ios-bulb',
+		bulbType: 'ionicon',
+		bulbColor: 'white',
+		bulbBackgroundColor: 'black',
+		mapColor: Mapbox.StyleURL.Street,
 	};
 	
 	/**
@@ -163,7 +168,8 @@ class MoovHomepage extends React.Component {
 				<View style={styles.annotationContainer}>
 					<View style={styles.annotationFill} />
 				</View>
-				<Mapbox.Callout title='My Location' />
+				<Mapbox.Callout title='My Location'
+				/>
 			</Mapbox.PointAnnotation>
 		)
 	}
@@ -276,6 +282,32 @@ class MoovHomepage extends React.Component {
 		this.setState({ price, showModal: !this.state.showModal })
 	};
 	
+	/**
+	 * toggleMapType
+	 *
+	 * Toogles the map color works for IOS only
+	 * @return {void}
+	 */
+	toggleMapType = () => {
+		if(this.state.bulbBackgroundColor === 'black') {
+			this.setState({
+				bulbName: 'ios-bulb',
+				bulbColor: 'black',
+				bulbBackgroundColor: 'white',
+				mapColor: Mapbox.StyleURL.Dark,
+			})
+		}
+		
+		if(this.state.bulbBackgroundColor === 'white') {
+			this.setState({
+				bulbName: 'ios-bulb',
+				bulbColor: 'white',
+				bulbBackgroundColor: 'black',
+				mapColor: Mapbox.StyleURL.Street,
+			})
+		}
+	};
+	
 	render() {
 		const { container, activityIndicator } = styles;
 		console.log(this.state);
@@ -309,12 +341,27 @@ class MoovHomepage extends React.Component {
 			return (
 				<View style={styles.container}>
 					<Mapbox.MapView
-						styleURL={Mapbox.StyleURL.Dark}
+						styleURL={this.state.mapColor}
 						zoomLevel={15}
 						centerCoordinate={myLocation}
 						style={styles.container}
-						showUserLocation={true}>
-						{this.renderAnnotations()}
+						showUserLocation={true}
+					>
+						{/*{this.renderAnnotations()}*/}
+						{
+							(Platform.OS === 'ios')
+								?
+								<View style={{ marginTop: 20, alignItems: 'flex-end'}}>
+									<Icon
+										raised
+										name={this.state.bulbName}
+										type={this.state.bulbType}
+										color={this.state.bulbColor}
+										containerStyle={{ backgroundColor:  this.state.bulbBackgroundColor }}
+										onPress={this.toggleMapType} />
+								</View>
+								: <View/>
+						}
 					</Mapbox.MapView>
 				</View>
 			);
