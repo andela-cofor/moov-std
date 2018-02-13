@@ -12,6 +12,7 @@ import {
 // third-part libraries
 import firebase from 'firebase';
 import { NavigationActions } from 'react-navigation';
+import * as axios from 'axios';
 
 // component
 import { SignupForm } from "../component";
@@ -93,11 +94,49 @@ class SignUpPage extends React.Component {
 	 * @return {void}
 	 */
 	saveUserToServer = () => {
-		const { navigate } = this.props.navigation;
-		console.log(this.state, 'Sending details')
-		console.log("email verification sent to user");
-		navigate('MoovPages');
+		this.setState({
+			loading: !this.state.loading
+		});
+		
+		axios.post('https://mov-backend.herokuapp.com/api/v1/signup', {
+			firstname: this.state.firstName,
+			lastname: this.state.lastName,
+			email: this.state.email,
+		})
+			.then(function (response) {
+				console.log(response);
+				this.setState({
+					loading: !this.state.loading
+				})
+			})
+			.catch(function (error) {
+				console.log(error);
+				console.log(error.message);
+				this.setState({
+					errorMessage: error.message,
+					loading: !this.state.loading
+				})
+			});
+		
+		// const { navigate } = this.props.navigation;
+		// console.log(this.state, 'Sending details')
+		// console.log("email verification sent to user");
+		// navigate('MoovPages');
 	};
+	
+	/**
+	 * createUserOnFirebase
+	 */
+	createUserOnFirebase = () => {
+		firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+			.then(this.onSignuSuccess)
+			.catch((error) => {
+				this.setState({
+					errorMessage: error.message,
+					loading: !this.state.loading
+				})
+			})
+	}
 	
 	/**
 	 * onSubmit
@@ -123,15 +162,7 @@ class SignUpPage extends React.Component {
 		
 		if(this.state.firstName.length >= 1 && this.state.lastName.length >= 1) {
 			if(hasNumber.test(this.state.firstName) === false && hasNumber.test(this.state.firstName) === false) {
-				this.setState({ loading: !this.state.loading, errorMessage: '' });
-				firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-					.then(this.onSignuSuccess)
-					.catch((error) => {
-						this.setState({
-							errorMessage: error.message,
-							loading: !this.state.loading
-						})
-					})
+				this.saveUserToServer();
 			}
 		}
 	};

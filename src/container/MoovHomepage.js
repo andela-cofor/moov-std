@@ -180,13 +180,8 @@ class MoovHomepage extends React.Component {
 			<Mapbox.PointAnnotation
 				key='pointAnnotation'
 				id='pointAnnotation'
-				// coordinate={[-122.406417, 37.784834]}
-				// coordinate={[-122.406417, 37.783834]}
-				// coordinate={[-122.406417, 37.782834]}
-				coordinate={[-122.406417, 37.781834]}
-			
+				coordinate={[this.state.myDestinationLongitude, this.state.myDestinationLatitude]}
 			>
-				
 				<View style={styles.annotationContainer}>
 					<View style={styles.annotationFill} />
 				</View>
@@ -213,6 +208,7 @@ class MoovHomepage extends React.Component {
 	 * @param locationName
 	 */
 	setUserLocation = (location, myLocationName) => {
+		console.log('got here');
 		this.setState({
 			myLocationLatitude: location.lat,
 			myLocationLongitude: location.lng,
@@ -281,7 +277,7 @@ class MoovHomepage extends React.Component {
 		if (unit === "K") { dist = dist * 1.609344 }
 		if (unit === "N") { dist = dist * 0.8684 }
 		
-		return dist
+		return dist * 500
 	};
 	
 	/**
@@ -300,7 +296,7 @@ class MoovHomepage extends React.Component {
 		
 		let price = Math.floor(distance) *  this.state.requestSlot;
 		
-		price = price * 500;
+		price = price;
 		
 		// this.setState({ price })
 		this.setState({ price, showModal: !this.state.showModal })
@@ -428,7 +424,7 @@ class MoovHomepage extends React.Component {
 							<Mapbox.Callout title='My Location'
 							/>
 						</Mapbox.PointAnnotation>
-						{/*{this.renderAnnotations()}*/}
+						{this.renderAnnotations()}
 						{
 							(Platform.OS === 'ios')
 								?
@@ -471,7 +467,7 @@ class MoovHomepage extends React.Component {
 							<Mapbox.Callout title='My Location'
 							/>
 						</Mapbox.PointAnnotation>
-						{/*{this.renderAnnotations()}*/}
+						{this.renderAnnotations()}
 						{
 							(Platform.OS === 'ios')
 								?
@@ -503,7 +499,7 @@ class MoovHomepage extends React.Component {
 						showUserLocation={true}
 					>
 						{this.getDriver()}
-						{/*{this.renderAnnotations()}*/}
+						{this.renderAnnotations()}
 						{
 							(Platform.OS === 'ios')
 								?
@@ -597,7 +593,7 @@ class MoovHomepage extends React.Component {
 							<GooglePlacesInput
 								text='Change my location'
 								onPress={(data, details = null) => {
-									// console.log(data, details)
+									console.log(data, details)
 									this.setUserLocation(details.geometry.location, details.name);
 								}}
 							/>
