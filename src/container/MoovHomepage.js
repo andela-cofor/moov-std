@@ -163,7 +163,12 @@ class MoovHomepage extends React.Component {
 			<Mapbox.PointAnnotation
 				key='pointAnnotation'
 				id='pointAnnotation'
-				coordinate={[this.state.myDestinationLongitude, this.state.myDestinationLatitude]}>
+				// coordinate={[-122.406417, 37.784834]}
+				// coordinate={[-122.406417, 37.783834]}
+				// coordinate={[-122.406417, 37.782834]}
+				coordinate={[-122.406417, 37.781834]}
+			
+			>
 				
 				<View style={styles.annotationContainer}>
 					<View style={styles.annotationFill} />
@@ -347,7 +352,7 @@ class MoovHomepage extends React.Component {
 						style={styles.container}
 						showUserLocation={true}
 					>
-						{/*{this.renderAnnotations()}*/}
+						{this.renderAnnotations()}
 						{
 							(Platform.OS === 'ios')
 								?
