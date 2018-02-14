@@ -9,8 +9,7 @@ import { Icon } from 'react-native-elements';
 import { MoovHomepage, WalletHomepage, AskHomepage, ProfileHomepage } from '../container';
 
 // component
-// import { BasicInformation, NotificationsPage, TransactionsPage } from "../component";
-
+import { ChatScreen } from "../component";
 
 export const MooveHome = StackNavigator({
 	MoovHomepage: {
@@ -41,6 +40,12 @@ export const WalletHome = StackNavigator({
 export const AskHome = StackNavigator({
 	AskHomepage: {
 		screen: AskHomepage,
+		navigationOptions: {
+			header: null,
+		}
+	},
+	ChatScreen: {
+		screen: ChatScreen,
 		navigationOptions: {
 			header: null,
 		}
@@ -102,13 +107,13 @@ export const Tabs = TabNavigator({
 	// 		tabBarIcon: <Icon name="credit-card-plus" type="material-community" color="white" />,
 	// 	},
 	// },
-	// AskUs: {
-	// 	screen: AskHome,
-	// 	navigationOptions: {
-	// 		tabBarLabel: 'Ask Us',
-	// 		tabBarIcon: <Icon name="help" type="entypo" color="white" />,
-	// 	},
-	// },
+	AskUs: {
+		screen: AskHome,
+		navigationOptions: {
+			tabBarLabel: 'Ask Us',
+			tabBarIcon: <Icon name="help" type="entypo" color="white" />,
+		},
+	},
 	Profile: {
 		screen: ProfileHome,
 		navigationOptions: {

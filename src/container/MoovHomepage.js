@@ -63,7 +63,6 @@ class MoovHomepage extends React.Component {
 				storageBucket: "moov-68c37.appspot.com",
 				messagingSenderId: "1050975255216"
 			});
-			// firebase.initializeApp();
 		}
 		
 		this.isVerified();
