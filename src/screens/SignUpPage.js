@@ -69,13 +69,17 @@ class SignUpPage extends React.Component {
 	 * sends user details to pa
 	 * @param {object} user - returned user object from firebase
 	 */
-	onSignuSuccess = (user) => {
-		this.setState({ loading: !this.state.loading });
+	onFirebaseSuccess = (user) => {
+		const { navigate } = this.props.navigation;
 		firebase.auth().onAuthStateChanged((user) => {
 			if (user) {
 				if (user && user.emailVerified === false) {
 					user.sendEmailVerification()
-						.then(this.saveUserToServer)
+						.then((response) => {
+							console.log(response);
+							this.setState({ loading: !this.state.loading });
+							navigate('MoovPages');
+						})
 						.catch((error) => {
 							this.setState({
 								errorMessage: error.message,
@@ -94,34 +98,22 @@ class SignUpPage extends React.Component {
 	 * @return {void}
 	 */
 	saveUserToServer = () => {
-		this.setState({
-			loading: !this.state.loading
-		});
-		
+		this.setState({ loading: !this.state.loading });
 		axios.post('https://mov-backend.herokuapp.com/api/v1/signup', {
-			firstname: this.state.firstName,
-			lastname: this.state.lastName,
-			email: this.state.email,
+			"firstname": this.state.firstName,
+			"lastname": this.state.lastName,
+			"email": this.state.email,
 		})
-			.then(function (response) {
-				console.log(response);
-				this.setState({
-					loading: !this.state.loading
-				})
-			})
-			.catch(function (error) {
-				console.log(error);
+			.then(this.createUserOnFirebase)
+			.catch((error) => {
+				console.log(error.response.data);
+				console.log(error.data);
 				console.log(error.message);
 				this.setState({
-					errorMessage: error.message,
+					errorMessage: error.response.data.data.message,
 					loading: !this.state.loading
 				})
 			});
-		
-		// const { navigate } = this.props.navigation;
-		// console.log(this.state, 'Sending details')
-		// console.log("email verification sent to user");
-		// navigate('MoovPages');
 	};
 	
 	/**
@@ -129,7 +121,7 @@ class SignUpPage extends React.Component {
 	 */
 	createUserOnFirebase = () => {
 		firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-			.then(this.onSignuSuccess)
+			.then(this.onFirebaseSuccess)
 			.catch((error) => {
 				this.setState({
 					errorMessage: error.message,
@@ -143,26 +135,43 @@ class SignUpPage extends React.Component {
 	 */
 	onSubmit = () => {
 		let hasNumber = /\d/;
-		console.log(this.state, 'State');
+		var pattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+		
 		if(this.state.firstName.length < 1) {
+			// this.setState({ loading: !this.state.loading });
 			this.setState({ errorMessage: 'First Name field cannot be empty' })
 		}
 		
 		if(hasNumber.test(this.state.firstName)) {
+			// this.setState({ loading: !this.state.loading });
 			this.setState({ errorMessage: 'First Name field cannot contains numbers' })
 		}
 		
 		if(this.state.lastName.length < 1) {
+			// this.setState({ loading: !this.state.loading });
 			this.setState({ errorMessage: 'Last Name field cannot be empty' })
 		}
 		
 		if(hasNumber.test(this.state.lastName)) {
+			// this.setState({ loading: !this.state.loading });
 			this.setState({ errorMessage: 'Last Name field cannot contains numbers' })
 		}
 		
-		if(this.state.firstName.length >= 1 && this.state.lastName.length >= 1) {
-			if(hasNumber.test(this.state.firstName) === false && hasNumber.test(this.state.firstName) === false) {
-				this.saveUserToServer();
+		if(this.state.password.length < 6) {
+			// this.setState({ loading: !this.state.loading });
+			this.setState({ errorMessage: 'Password cannot be less than 6 characters' })
+		}
+		
+		if(this.state.email.match(pattern) === null) {
+			// this.setState({ loading: !this.state.loading });
+			this.setState({ errorMessage: 'Email address is badly formatted' })
+		}
+		
+		if(this.state.email.match(pattern) !== null) {
+			if(this.state.firstName.length >= 1 && this.state.lastName.length >= 1) {
+				if(hasNumber.test(this.state.firstName) === false && hasNumber.test(this.state.firstName) === false) {
+					this.saveUserToServer();
+				}
 			}
 		}
 	};

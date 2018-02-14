@@ -1,16 +1,16 @@
 // react library
 import React, { Component } from 'react';
 
-// third-party react library
+// react-native libraries
 import {
 	StyleSheet,
 	Text,
 	View,
 	ActivityIndicator,
-	ScrollView,
-	TouchableHighlight,
-	Image,
 } from 'react-native';
+
+// third-party libraries
+import { Header, Card, ListItem } from 'react-native-elements';
 
 class ChatScreen extends Component {
 	
@@ -49,6 +49,12 @@ class ChatScreen extends Component {
 		
 		return (
 			<View style={container}>
+				<Header
+					backgroundColor='#004a80'
+					// leftComponent={{ icon: 'menu', color: '#fff' }}
+					centerComponent={{ text: this.state.selectedChat, style: { color: '#fff' } }}
+					// rightComponent={{ icon: 'home', color: '#fff' }}
+				/>
 				<Text>Selected Chat: {this.state.selectedChat}</Text>
 				<Text>UserId: {this.state.userId}</Text>
 			</View>
@@ -60,8 +66,8 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor:'#fff',
-		justifyContent: 'center',
-		alignItems: 'center',
+		// justifyContent: 'center',
+		// alignItems: 'center',
 	},
 	activityIndicator: {
 		flex: 1,

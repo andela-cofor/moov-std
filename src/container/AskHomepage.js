@@ -6,6 +6,7 @@ import {StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-nati
 
 // third-party libraries
 import { Header, Card, ListItem } from 'react-native-elements';
+import { NavigationActions } from "react-navigation";
 
 // common
 import { StatusBarComponent} from "../common";
@@ -83,19 +84,19 @@ class AskHomepage extends React.Component {
 		
 		const users = [
 			{
-				name: 'brynn',
+				name: 'Brynn',
 				avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg'
 			},
 			{
-				name: 'kfriedson',
+				name: 'Friedson',
 				avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/kfriedson/128.jpg'
 			},
 			{
-				name: 'ladylexy',
+				name: 'Ladylexy',
 				avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg'
 			},
 			{
-				name: 'adhamdannaway',
+				name: 'Adhamdannaway',
 				avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg'
 			},
 		];
