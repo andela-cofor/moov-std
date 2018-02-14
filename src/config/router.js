@@ -84,31 +84,31 @@ export const ProfileHome = StackNavigator({
 
 
 export const Tabs = TabNavigator({
-	Moov: {
-		screen: MooveHome,
-		navigationOptions: {
-			tabBarLabel: 'MOOV',
-			color: 'white',
-			style: {
-				color: '#004a80',
-			},
-			tabBarIcon: <Icon name="ios-car-outline" type="ionicon" color="white" />,
-		},
-	},
-	Wallet: {
-		screen: WalletHome,
-		navigationOptions: {
-			tabBarLabel: 'Wallet',
-			tabBarIcon: <Icon name="credit-card-plus" type="material-community" color="white" />,
-		},
-	},
-	AskUs: {
-		screen: AskHome,
-		navigationOptions: {
-			tabBarLabel: 'Ask Us',
-			tabBarIcon: <Icon name="help" type="entypo" color="white" />,
-		},
-	},
+	// Moov: {
+	// 	screen: MooveHome,
+	// 	navigationOptions: {
+	// 		tabBarLabel: 'MOOV',
+	// 		color: 'white',
+	// 		style: {
+	// 			color: '#004a80',
+	// 		},
+	// 		tabBarIcon: <Icon name="ios-car-outline" type="ionicon" color="white" />,
+	// 	},
+	// },
+	// Wallet: {
+	// 	screen: WalletHome,
+	// 	navigationOptions: {
+	// 		tabBarLabel: 'Wallet',
+	// 		tabBarIcon: <Icon name="credit-card-plus" type="material-community" color="white" />,
+	// 	},
+	// },
+	// AskUs: {
+	// 	screen: AskHome,
+	// 	navigationOptions: {
+	// 		tabBarLabel: 'Ask Us',
+	// 		tabBarIcon: <Icon name="help" type="entypo" color="white" />,
+	// 	},
+	// },
 	Profile: {
 		screen: ProfileHome,
 		navigationOptions: {

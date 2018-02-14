@@ -79,7 +79,7 @@ class ProfileHomepage extends React.Component {
 			<View style={container}>
 				<StatusBarComponent style={{ height: (Platform.OS === 'ios') ? 60 : 0 }} />
 				<View>
-					<View style={{ height: '51%', backgroundColor: '#004a80', marginTop: (Platform.OS === 'ios') ? 20 : 0 }}>
+					<View style={{ height: height / 2.5, backgroundColor: '#004a80', marginTop: (Platform.OS === 'ios') ? 20 : 0 }}>
 						<ImageBackground
 							style={{width: width, height: '100%'}}
 							blurRadius={2}
@@ -101,7 +101,7 @@ class ProfileHomepage extends React.Component {
 							</View>
 						</ImageBackground>
 					</View>
-					<View style={{ height: '30%'}}>
+					<View style={{ height: height / 2.5}}>
 						<Card title="DETAILS">
 							<Card containerStyle={{padding: 0}} >
 								<TouchableOpacity
